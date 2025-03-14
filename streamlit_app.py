@@ -40,7 +40,7 @@ if uploaded_file is not None:
     
     # Set x-axis to logarithmic scale and invert the y-axis
     fig.update_xaxes(type="log", title_text=f"Stress ({unit}) [log scale]")
-    fig.update_layout(title="e vs. log(Stress)", dragmode='select')
+    fig.update_layout(title="e vs. Stress)", dragmode='select')
     
     # Display the initial plot
     st.plotly_chart(fig, use_container_width=True)
