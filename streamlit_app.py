@@ -40,7 +40,6 @@ if uploaded_file is not None:
     
     # Set x-axis to logarithmic scale and invert the y-axis
     fig.update_xaxes(type="log", title_text=f"Stress ({unit}) [log scale]")
-    fig.update_yaxes(autorange='reversed', title_text="Void Ratio (e)")
     fig.update_layout(title="e vs. log(Stress)", dragmode='select')
     
     # Display the initial plot
