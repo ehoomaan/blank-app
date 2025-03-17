@@ -32,9 +32,10 @@ fig.add_trace(go.Scatter(
 ))
 fig.update_xaxes(type="log", title_text="Stress [log scale]")
 fig.update_layout(title="Click Points to Toggle Color")
+st.plotly_chart(fig)
 
 # Display with plotly_events
-events = plotly_events(fig, click_event=True, hover_event=False)
+#events = plotly_events(fig, click_event=True, hover_event=False)
 
 # Toggle selection if any clicks happened
 if events:
@@ -47,4 +48,4 @@ if events:
                 st.session_state.selected_indices.add(idx)
 
 # Show which points are selected
-st.write("Currently selected indices:", list(st.session_state.selected_indices))
+#st.write("Currently selected indices:", list(st.session_state.selected_indices))
