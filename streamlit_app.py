@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from streamlit_plotly_events import plotly_events  # New import for click events
+from streamlit_plotly_events import plotly_events  # For click events
 import base64, io
 
 # --- App Title ---
@@ -40,7 +40,8 @@ if uploaded_file is not None:
     
     # Set x-axis to logarithmic scale and invert the y-axis
     fig.update_xaxes(type="log", title_text=f"Stress ({unit}) [log scale]")
-    fig.update_layout(title="e vs. Stress)", dragmode='select')
+    fig.update_yaxes(autorange='reversed', title_text="Void Ratio (e)")
+    fig.update_layout(title="e vs. log(Stress)", dragmode='select')
     
     # Display the initial plot
     st.plotly_chart(fig, use_container_width=True)
@@ -56,6 +57,7 @@ if uploaded_file is not None:
         for event in events:
             idx = event.get("pointIndex")
             if idx is not None:
+                # Toggle selection: if already selected, remove it; otherwise, add it.
                 if idx in st.session_state.selected_indices:
                     st.session_state.selected_indices.remove(idx)
                 else:
@@ -73,40 +75,34 @@ if uploaded_file is not None:
     # Display the updated plot with selection changes.
     st.plotly_chart(fig, use_container_width=True)
     
-    # --- Interactive Inputs for Line Fitting ---
-    st.write("### Define Stress Range for Line Fitting")
-    col1, col2 = st.columns(2)
-    with col1:
-        stress_min = st.number_input("Stress minimum", value=float(np.min(stress_values)))
-    with col2:
-        stress_max = st.number_input("Stress maximum", value=float(np.max(stress_values)))
-    
-    if st.button("Fit Line to Selected Range"):
-        # Filter the data based on the specified stress range
-        mask = (stress_values >= stress_min) & (stress_values <= stress_max)
-        selected_stress = stress_values[mask]
-        selected_e = e_values[mask]
-        
-        if len(selected_stress) < 2:
-            st.error("Please select at least two data points within the range for fitting.")
+    # --- Fit Line Button: Use Selected Points Only ---
+    if st.button("Fit a Line"):
+        # Ensure at least two points have been selected.
+        if len(st.session_state.selected_indices) < 2:
+            st.error("Please select at least two points for fitting.")
         else:
-            # Perform linear regression on log10(stress) vs. e
+            # Extract the selected points.
+            selected_indices = list(st.session_state.selected_indices)
+            selected_stress = stress_values[selected_indices]
+            selected_e = e_values[selected_indices]
+            
+            # Perform linear regression on log10(stress) vs. e.
             log_stress = np.log10(selected_stress)
             coeffs = np.polyfit(log_stress, selected_e, 1)
             slope, intercept = coeffs
             
             st.write(f"Fitted line: **slope = {slope:.3f}**, **intercept = {intercept:.3f}**")
             
-            # Generate fitted line data over the defined stress range
-            x_fit = np.linspace(stress_min, stress_max, 100)
+            # Generate fitted line data over the range of selected stress values.
+            x_fit = np.linspace(np.min(selected_stress), np.max(selected_stress), 100)
             y_fit = intercept + slope * np.log10(x_fit)
             
-            # Add the fitted line to the figure
+            # Add the fitted line to the figure.
             fig.add_trace(go.Scatter(
                 x=x_fit,
                 y=y_fit,
                 mode='lines',
-                line=dict(color='red'),
+                line=dict(color='green'),
                 name=f'Fit: slope = {slope:.3f}'
             ))
             
