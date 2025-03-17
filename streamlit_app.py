@@ -38,14 +38,14 @@ st.plotly_chart(fig)
 #events = plotly_events(fig, click_event=True, hover_event=False)
 
 # Toggle selection if any clicks happened
-if events:
-    for evt in events:
-        idx = evt.get("pointIndex")
-        if idx is not None:
-            if idx in st.session_state.selected_indices:
-                st.session_state.selected_indices.remove(idx)
-            else:
-                st.session_state.selected_indices.add(idx)
+#if events:
+  #  for evt in events:
+    #    idx = evt.get("pointIndex")
+     #   if idx is not None:
+      #      if idx in st.session_state.selected_indices:
+       #         st.session_state.selected_indices.remove(idx)
+       #     else:
+         #       st.session_state.selected_indices.add(idx)
 
 # Show which points are selected
 #st.write("Currently selected indices:", list(st.session_state.selected_indices))
